@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="jspsych/jspsych.js"></script>
+    <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/dist/plugin-survey-fraction.js"></script>
+    <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
+    <script src="jspsych/dist/plugin-html-button-response.js"></script>
+    <script src="jspsych/dist/plugin-survey-html-form.js"></script>
+    <script src="jspsych/dist/plugin-instructions.js"></script>
+    <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+    <script src="jspsych/plugin-call-function.js"></script>
+    <script src="jspsych/dist/plugin-external-html.js"></script>
+    <script src="jspsych/dist/plugin-survey-likert.js"></script>
+    <script src="jspsych/dist/plugin-survey-text.js"></script>
+
+
+    <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+    <style>
+
+      .jspsych-survey-likert-statement {
+    font-size: 28px;
+      }
+
+
+      .longParagraph {
+        margin-top: 40px;
+        max-width: 65%;
+        text-justify: distribute;
+        align-items: center;
+        margin-left: 15%;
+      }
+
+      #scenario-target {
+        width: 40vw;
+        height: 100vh;
+        float: left;
+        display: none;
+        font-family: "Open Sans", "Arial", sans-serif;
+        font-size: 25px;
+        line-height: 1.6em;
+        padding: 20px 20px;
+      }
+
+      #jspsych-target {
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 20px 20px;
+        float: right;
+      }
+
+      .jspsych-instructions-nav:has(#jspsych-instructions-next) {
+        display: flex;
+        justify-content: right;
+      }
+
+      .jspsych-instructions-nav:has(#jspsych-instructions-back + #jspsych-instructions-next) {
+        display: flex;
+        justify-content: center;
+      }
+
+      .white {
+        color: white;
+      }
+
+      .icon, .table {
+      	width: 1000px;
+      }
+
+      p {
+        text-align: center;
+      }
+
+      li {
+        list-style: square;
+      }
+
+
+img{
+  margin-top: 80px;
+  width: 1200px;
+}
+
+body {
+  display: flex;
+}
+
+#transit{
+  width: 1400px;
+}
+
+#transition {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 5px;
+    margin-inline-end: 5px;
+}
+
+    </style>
+
+  </head>
+  <body>
+    <!-- <iframe id="iframe-target" src="https://www.jspsych.org"> </iframe> -->
+    <div id="scenario-target"><b>Part 2: Worked-out Example 1: Breathalyzers </b><br><br></br></br><u><b>scenario:</b></br></u></br>
+      Imagine you work in a police department. Your department often uses
+      Breathalyzers to test whether drivers are driving under the influence of
+      alcohol. Based on the previous 100 cases in which a person's sobriety was
+      later verified by a blood test, you know the following. Among the 100 cases, <br />15
+      drivers were sober but tested positive; <br />8 drivers were drunk and tested positive; <br />75 drivers were sober and tested negative;  <br />2 drivers were drunk but tested negative.
+    </div>
+<div id="jspsych-target"></div>
+  </body>
+  <script>
+
+
+var jsPsych = initJsPsych({
+  display_element: "jspsych-target",
+  on_finish: function(){ saveData(subjectID, jsPsych.data.get().csv()); }
+
+});
+
+
+
+    var timeline = [];
+
+                // sample function that might be used to check if a participant has given
+// consent to participate.
+var check_consent = function(elem) {
+    if (document.getElementById('consent_checkbox').checked) {
+        return true;
+    }
+    else {
+        alert("If you wish to participate, you must check the box next to the statement 'I agree to participate in this study.'");
+        return false;
+    }
+    return false;
+};
+
+// declare the block.
+var trial = {
+    type: jsPsychExternalHtml,
+    url: "external_page.html",
+    cont_btn: "start",
+    check_fn: check_consent
+};
+timeline.push(trial);
+
+
+
+    var subjectID = prompt('What is your IU email? (You need to type in your email so we can grant you credits for your participation. Otherwise, we will not know who you are.)');
+         //jsPsych.data.addProperties({subject_id: subjectID});
+         //var subjectID = getQueryVariable("id");
+         if (subjectID === '' || subjectID == null) {subjectID=Math.floor(Math.random()*10000).toString()};
+         jsPsych.data.addProperties({subject_id: subjectID});
+
+
+
+let negFeedback = "<b>Your final answer was <FONT COLOR='#ff0000'>INCORRECT! &#10060;</FONT></b>"
+let posFeedback ="<b>Your final answer was <FONT COLOR='#008000'>CORRECT! &#9989;</FONT></b>"
+
+let F_S1Q1_body = `</br>First, identify the critical events:</br><u style="color:#568203">Target event: </u><input name="step1" type="text" size="40" required></br><u style="color:red">Conditioned event: </u><input name="step2" type="text" size="25" required></br></br>Enter your final answer:</br>The probability that a driver is drunk given this driver tested positive is <input name="nominator" type="text" size="3" required> &frasl; <input name="denominator" type="text" size="3" required>. </br><i> Note: You don't have to simplify the fraction. E.g., answering "10/20", "1/2", "50/100" are all fine.</i>`
+let F_S1Q2_body = F_S1Q1_body.replace("drunk given this driver tested positive", "sober given this driver tested negative")
+let F_S3Q1_body = F_S1Q1_body.replace("a driver is drunk given this driver tested positive", "Aaron is from the Green party given he is liberal is")
+let F_S3Q2_body = F_S1Q1_body.replace("a driver is drunk given this driver tested positive", "Albert is conservative given he is from the Green part is")
+
+
+let F_S1Q1_answer = `</br></br>The correct final answer:</br>The probability that a driver is drunk given this driver tested positive is 14/20. <i>(All equivalent fractions such as "7/10", "70/100", etc. counted correct.)</i></br></br>Please move on to see the explanation why this is correct.`
+let F_S1Q2_answer = `</br></br>The correct final answer:</br>The probability that a driver is sober given this driver tested negative is 76/80. <i>(All equivalent fractions such as "38/40", "19/20", etc. counted correct.)</i></br></br>Please move on to see the explanation why this is correct.`
+let F_S2Q1_answer = F_S1Q1_answer.replace('14/20. <i>(All equivalent fractions such as "7/10", "70/100", etc.','45/60. <i>(All equivalent fractions')
+let F_S2Q2_answer = F_S1Q2_answer.replace('76/80. <i>(All equivalent fractions such as "38/40", "19/20", etc.', '66/75. <i>(All equivalent fractions')
+let F_S3Q1_answer = F_S1Q2_answer.replace('a driver is sober given this driver tested negative is 76/80. <i>(All equivalent fractions such as "38/40", "19/20", etc.', 'Aaron is from the Green party given he is liberal is 44/100. <i>(All equivalent fractions')
+let F_S3Q2_answer = F_S1Q2_answer.replace('a driver is sober given this driver tested negative is 76/80. <i>(All equivalent fractions such as "38/40", "19/20", etc.', 'Albert is conservative given he is from the Green party is 36/80. <i>(All equivalent fractions')
+
+
+let preQ1 = '<p>Enter your final answer for <b>Pretest Scenario 1 - Q1:</b></br></br> "Based on the given data, if a driver tested positive, what is the probability that this driver is actually drunk?" </br></br> If you do not have an answer, please type "I don`t know". </br> </br> NOTE: you do not have to simplify the fraction or calculate the percentage. E.g., answering "10/20", "1/2", "0.5", or "50%" are all fine. </br> </p>'
+let preQ2 = '<p>Enter your final answer for <b>Pretest Scenario 1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?"   </br></br> If you do not have an answer, please type "I don`t know". </br> </br> NOTE: you do not have to simplify the fraction or calculate the percentage. E.g., answering "10/20", "1/2", "0.5", or "50%" are all fine. </br> </p>'
+let preQ3 = preQ2.replace('1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?', '2 - Q1?:</b></br></br> "You met Kristine, who is a Green party member. What is the probability that Kristine is conservative?"')
+let preQ4 = preQ2.replace('1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?', '3 - Q1?:</b></br></br> "Based on the given data, if your patient tested positive, what is the probability that this patient actually has bacteria in their blood?"')
+let preQ5 = preQ2.replace('1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?', '3 - Q2?:</b></br></br> "Based on the given data, if a patient actually has Legionella bacteria in their blood, what is the probability that this patient will test positive?"')
+
+let postQ1 = '<p>Enter your final answer for <b>Posttest Scenario 1 - Q1?:</b></br></br> "Based on the given data, if a driver tested positive, what is the probability that this driver is actually drunk?" </br></br> NOTE: you do not have to simplify the fraction or calculate the percentage. E.g., answering "10/20", "1/2", "0.5", or "50%" are all fine. </br> </p>'
+let postQ2 = '<p>Enter your final answer for <b>Posttest Scenario 1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?" </br></br> NOTE: you do not have to simplify the fraction or calculate the percentage. E.g., answering "10/20", "1/2", "0.5", or "50%" are all fine. </br> </p>'
+let postQ3 = postQ2.replace('1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?', '2 - Q1:</b></br></br> "You met Liz, and by the end of lunch you are convinced that she is conservative. What is the probability that Liz is from the Green party?"')
+let postQ4 = postQ2.replace('1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?', '3 - Q1:</b></br></br> "Based on the given data, if your patient tested positive, what is the probability that this patient actually has bacteria in their blood?"')
+let postQ5 = postQ2.replace('1 - Q2?:</b></br></br> "Based on the given data, if a driver tested negative, what is the probability that this driver is actually sober?', '3 - Q2:</b></br></br> "Based on the given data, if a patient actually has Streptococci bacteria in their blood, what is the probability that this patient will test positive?"')
+
+
+let part1 = "<b>Part 1: Pretest Questions</b><br><br></br></b>"
+let part4 = "<b>Part 4: Posttest Questions</b><br><br></br></b>"
+
+//for main instruction
+let s1 = "<b>Part 2: Worked-out Examples<br><br><u>Scenerio 1 - Breathalyzers:</u></b></br></br>Imagine you work in a police department. Your department often uses Breathalyzers to test whether drivers are driving under the influence of alcohol. Based on the previous 100 cases in which a person's sobriety was later verified by a blood test, you know the following: <ol> <li>10 out of 100 drivers were drunk.</li><li>Among the 10 drivers who were drunk, 8 of them tested positive.</li> <li>Among the 90 drivers who were sober, 12 of them tested positive.</li>"    
+  let s1q1 = "<div><u><b>Question:</b></br></u></br><div> Based on the given data, if a driver tested positive, what is the probability that this driver is actually drunk?<br><br>"
+  let s1q1_intro0 =  "<div style='color:white'><u><b>Solution:</b></br></u></br>We already know that the driver tested positive. Our aim is to find out if this driver is actually drunk. Thus, the critical events are:</br></br><u>Target event:</u> Driver being drunk and tested positive</br><u>Conditioned event:</u> Driver tested positive</br></br>We will divide the target event by the conditioned event to find the answer.</br></div>"
+  let s1q1_intro =  "<div><u><b>Solution:</b></br></u></br>We already know that the driver tested positive. Our aim is to find out if this driver is actually drunk. Thus, the critical events are:</br></br><u style='color:#568203'>Target event:</u> Driver being drunk and tested positive</br><u style='color:red'>Conditioned event:</u> Driver tested positive</br></br>We will divide the target event by the conditioned event to find the answer.</br></div>"
+  let s1q1_introB =  "<div><u><b>Solution:</b></br></u></br><span style='color:white'>We already know that the driver tested positive. Our aim is to find out if this driver is actually drunk. Thus, the critical events are:</br></br><u>Target event:</u> Driver being drunk and tested positive</br><u>Conditioned event:</u> Driver tested positive</br></br><span>We will divide the target event by the conditioned event to find the answer.</span></br></div>"
+  let s1q1_introC =  "<div><u><b>Solution:</b></br></u></br><span style='color:white'>We already know that the driver tested positive. Our aim is to find out if this driver is actually drunk. Thus, the critical events are:</span></br></br><u style='color:#568203'>Target event:</u> Driver being drunk and tested positive</br><u style='color:red'>Conditioned event:</u> Driver tested positive</br></br><span style='color:white'>We will divide the target event by the conditioned event to find the answer.</span></br></div>"
+  let s1q1_step1 = "</br>1. There were 8 people who were drunk and tested positive.</br>"
+    let s1q1_step2 = "2. 12 people who were sober still tested positive. Thus, in total, there were 20 people tested positive (8+12=20).</br>"
+    let s1q1_step3 = "</br><div>Then, the probability of a driver being drunk given this driver tested positive is 8/20 (40%).</div>"
+  let s1q2 = s1q1.replace("positive, what is the probability that this driver is actually drunk?", "negative, what is the probability that this driver is actually sober?") 
+  let s1q2_intro0 =  "<div style='color:white'><u><b>Solution:</b></br></u></br>We already know that the driver tested negative. Our aim is to find out if this driver is actually sober. Thus, the critical events are:</br></br><u>Target event:</u> Driver being sober and tested negative</br><u>Conditioned event:</u> Driver tested negative</br>We will divide the target event by the conditioned event to find the answer.</br></div>"
+  let s1q2_intro =  "<div><u><b>Solution:</b></br></u></br>We already know that the driver tested negative. Our aim is to find out if this driver is actually sober. Thus, the critical events are:</br></br><u style='color:#568203'>Target event:</u> Driver being sober and tested negative</br><u style='color:red'>Conditioned event:</u> Driver tested negative</br>We will divide the target event by the conditioned event to find the answer.</br></div>"
+    let s1q2_step1 = "</br>1. Since 12 out of 90 sober drivers tested positive, there were 78 sober drivers tested negative (90-12=78).</br></div>"
+    let s1q2_step2 =  "2. Since 8 out of 10 drunk drivers tested positive, there were 2 drunk drivers who still tested negative (10-8=2). Thus, 80 drivers tested negative in total (78+2=80)."
+    let s1q2_step3 = "</br></br>Then we know that the probability of a driver being sober given this driver tested negative is 78/80 (97.5%)."
+
+    
+
+    //pictures
+let blank = "<div><b>         </b>" +  "<img src='pictures/blank.png'>"
+let Ps1q1_step1 = `${s1q1}` + `${s1q1_intro}`  + "<img src='pictures/MI_S1Q1_1.png'>"
+let Ps1q1_step2 = `${s1q1}` + `${s1q1_introB}`  + "<img src='pictures/MI_S1Q1_2.png'>"
+let Ps1q1_step3 = `${s1q1}` + `${s1q1_introB}` +  "<img src='pictures/MI_S1Q1_3.png'>"
+let Ps1q1_step4 = `${s1q1}` + `${s1q1_introC}` +  "<img src='pictures/MI_S1Q1_4.png'>"
+
+let Ps1q2_step1 = `${s1q2}` + `${s1q2_intro}` + "<img src='pictures/MI_S1Q2_1.png'>"
+
+
+
+
+ //feedback counterpart 
+let s1_f = "<b>Part 3: Practice Session<br><br><u>Scenerio 1: Breathalyzers:</u></b></br></br>Imagine you work in a police department. Your department often uses Breathalyzers to test whether drivers are driving under the influence of alcohol. Based on the previous 100 cases in which a person's sobriety was later verified by a blood test, you know the following: <ol> <li>18 out of 100 drivers were drunk.</li><li>Among the 18 drivers who were drunk, 14 of them tested positive.</li> <li>Among the 82 drivers who were sober, 6 of them tested positive.</li>"    
+  let s1_f_q1_step1 ="</br>1. There were 14 people who were drunk and tested positive.</br></div>"
+    let s1_f_q1_step2 =  "2. 6 people who were sober still tested positive. Thus, in total, there were 20 people tested positive (14+6=20).</br>"
+    let s1_f_q1_step3 = "</br></br>Then, the probability of a driver being drunk given this driver tested positive is 14/20 (70%)."
+    let s1_f_q2_step1 =  "</br>1. Since 6 out of 82 sober drivers tested positive, there were 76 sober drivers tested negative (82-6=76).</br></div>"
+    let s1_f_q2_step2 =  "2. Since 14 out of 18 drunk drivers tested positive, there were 4 drunk drivers who still tested negative.(18-14=4). Thus, 80 drivers tested negative in total.(76+4=80)"
+    let s1_f_q2_step3 = "</br></br>Then we know that the probability of a driver being sober given this driver tested negative is 76/80 (95%)."
+//pictures
+let Ps1q1_step1F = `${s1q1}` + `${s1q1_intro}` + "<img src='pictures/FB_S1Q1_1.png'>"
+let Ps1q1_step2F = `${s1q1}` + `${s1q1_introB}` + "<img src='pictures/FB_S1Q1_2.png'>"
+let Ps1q1_step3F = `${s1q1}` + `${s1q1_introB}` +  "<img src='pictures/FB_S1Q1_3.png'>"
+let Ps1q1_step4F = `${s1q1}` + `${s1q1_introC}` + "<img src='pictures/FB_S1Q1_4.png'>"
+
+let Ps1q2_step1F = `${s1q2}` + `${s1q2_intro}` +  "<img src='pictures/FB_S1Q2_1.png'>"
+
+
+
+//for main instruction
+let s2 = "<b>Part 2: Worked-out Examples</b><br><br></br></br><u><b>Scenario 2 - Breathalyzers:</b></br></u></br>Imagine you work in a police department. Your department often uses Breathalyzers to test whether drivers were driving under the influence of alcohol. Based on the previous 100 cases in which a person's sobriety was later verified by a blood test, you know the following: <ol> <li>Among the 100 drivers, 40 were drunk;</li><li>Among the 40 drivers who were drunk, 36 of them tested positive;</li> <li>Among the 60 drivers who were sober, 14 of them tested positive.</li>"    
+  let s2q1 = s1q1
+  let s2q1_intro0 =  "<div style='color:white'><u><b>Solution:</b></br></u><u>Target event:</u> Driver being drunk and tested positive</br><u>Conditioned event:</u> Driver tested positive</br></div>"
+  let s2q1_intro =  "<div><u><b>Solution:</b></br></u><u style='color:#568203'>Target event:</u> Driver being drunk and tested positive</br><u style='color:red'>Conditioned event:</u> Driver tested positive</br></div>"
+  let s2q1_introB =  "<div><u><b>Solution:</b></br></u><span style='color:white'> <u>Target event:</u> Driver being drunk and tested positive</br><u>Conditioned event:</u> Driver tested positive<span></br></div>"
+  // let s2q1_introC =  "<div><u><b>Solution:</b></br></u></br><span style='color:white'>We already know that the driver tested positive. Our aim is to find out if this driver is actually drunk. Thus, the critical events are:</span></br></br><u style='color:#568203'>Target event:</u> Driver being drunk and tested positive</br><u style='color:red'>Conditioned event:</u> Driver tested positive</br></br><span style='color:white'>We will divide the target event by the conditioned event to find the answer.</span></br></br></div>"
+  let s2q1_step1 = "</br>1. There were 36 people who were drunk and tested positive.</br></div>"
+    let s2q1_step2 = "2. 14 people who were sober still tested positive. Thus, in total, there were 50 people who tested positive.(36+14=50)</br>"
+    let s2q1_step3 =  "</br></br>Then, the probability of a driver being drunk given this driver tested positive is 36/50 (72%)."
+  let s2q2 = s2q1.replace("positive, what is the probability that this driver is actually drunk?","negative, what is the probability that this driver is actually sober?" )
+  let s2q2_intro =  "<div><u><b>Solution:</b></br></u><u style='color:#568203'>Target event:</u> Driver being sober and tested negative</br><u style='color:red'>Conditioned event:</u> Driver tested negative</br></div>"
+    let s2q2_step1 =  "</br>1. Since 14 out of 60 sober drivers tested positive, there were 46 sober drivers tested negative. (60-14=46)</div>"
+    let s2q2_step2 = "2. Since 36 out of 40 drunk drivers tested positive, there were 4 drunk drivers who still tested negative.(40-36=4).  Thus, 50 drivers tested negative in total. (4+46=50)"
+    let s2q2_step3 = "</br></br>Then we know that the probability of a patient being healthy given this patient tested negative is 46/50 (92%)."
+//pictures
+let Ps2q1_step1 = `${s2q1}` + `${s2q1_intro}` + "<img src='pictures/MI_S2Q1_1.png'>"
+let Ps2q1_step2 = `${s2q1}`+ `${s2q1_introB}` + "<img src='pictures/MI_S2Q1_2.png'>"
+let Ps2q1_step3 = `${s2q1}`+ `${s2q1_intro}` + "<img src='pictures/MI_S2Q1_3.png'>"
+
+let Ps2q2_step1 = `${s2q2}` + `${s2q2_intro}` +  "<img src='pictures/MI_S2Q2_1.png'>"
+
+
+
+    //feedback counterpart 
+let s2_f = "<b>Part 3: Practice Session<br><br><u>Scenerio 2: Breathalyzers</u></b></br></br>Imagine you work in a police department. Your department often uses Breathalyzers to test whether drivers are driving under the influence of alcohol. Based on the previous 135 cases in which a person's sobriety was later verified by a blood test, you know the following: <ol> <li>54 out of 135 drivers were drunk.</li><li>Among the 54 drivers who were drunk, 45 of them tested positive;</li> <li>Among the 81 drivers who were sober, 15 of them tested positive.</li>"    
+    let s2_f_q1_step1 = "</br>1. There were 45 people who were drunk and tested positive.</br></div>"
+    let s2_f_q1_step2 = "2. 15 people who were sober still tested positive. Thus, in total, there were 60 people who tested positive.(36+14=50)</br>"
+    let s2_f_q1_step3 = "</br></br>Then, the probability of a driver being drunk given this driver tested positive is 45/60 (75%)."
+    let s2_f_q2_step1 = "</br>1. Since 15 out of 81 sober drivers tested positive, there were 66 sober drivers tested negative. (81-15=66)</div>"
+    let s2_f_q2_step2 = "2. Since 45 out of 54 drunk drivers tested positive, there were 9 drunk drivers who still tested negative.(54-45=9).  Thus, 75 drivers tested negative in total. (9+66=75)"
+    let s2_f_q2_step3 = "</br></br>Then we know that the probability of a patient being healthy given this patient tested negative is 66/75 (88%)."
+//pictures
+let Ps2q1_step1F = `${s2q1}` +`${s2q1_intro}` + "<img src='pictures/FB_S2Q1_1.png'>"
+let Ps2q1_step2F = `${s2q1}`+ `${s2q1_introB}` + "<img src='pictures/FB_S2Q1_2.png'>"
+let Ps2q1_step3F = `${s2q1}`+ `${s2q1_intro}` + "<img src='pictures/FB_S2Q1_3.png'>"
+
+let Ps2q2_step1F = `${s2q2}` +`${s2q2_intro}` +  "<img src='pictures/FB_S2Q2_1.png'>"
+
+
+
+
+//for main instruction
+let s3 = "<b>Part 2: Worked-out Examples</b><br><br></br></br><u><b>Scenario 3 - Parliament Members:</b></br></u></br> Imagine that you are a lunch guest at the parliament of a small European country. There are two political parties in this 120-member parliament, namely the Blue party and the Green party. There are conservative and liberal members in both parties. Everyone is seated randomly, as is the custom in this country to encourage everyone to communicate with everyone else. You know the following:<ol> <li>Among the 120 parliament members, 60 are from the Blue party.</li><li>Among the 120 parliament members, 75 are liberal.</li> <li>In the Blue party, 33 members are liberal.</li>" 
+  let s3q1 = "<div><u><b>Question:</b></br></u></br><div> You are seated next to Allison, who is a member of parliament. By the end of lunch, you are convinced that she is a conservative. Given this assessment, what is your best estimate of the probability that she is one of the parliament members from the Blue party?<br><br></div>"
+  let s3q1_intro0 =  "<div style='color:white'><u><b>Solution:</b></br></u></br>We already know that Allison is conservative. Our aim is to find out the probability that she is from the Blue party. Thus, the two critical events are:</br></br><u>Target event:</u> Allison being a conservative Blue</br><u>Conditioned event:</u> Allison being a conservative</br></br>We will divide the target event by the conditioned event to find the answer.</br></div>"
+  let s3q1_intro =  "<div><u><b>Solution:</b></br></u></br>We already know that Allison is conservative. Our aim is to find out the probability that she is from the Blue party. Thus, the two critical events are: </br></br><u style='color:#568203'>Target event:</u> Allison being a conservative Blue</br><u style='color:red'>Conditioned event:</u> Allison being a conservative</br></br>We will divide the target event by the conditioned event to find the answer.</br></div>"
+  let s3q1_introB =  "<div><u><b>Solution:</b></br></u></br><span style='color:white'>We already know that Allison is conservative. Our aim is to find out the probability that she is from the Blue party. Thus, the two critical events are: </br></br><u>Target event:</u> Allison being a conservative Blue</br><u>Conditioned event:</u> Allison being a conservative</br></br><span>We will divide the target event by the conditioned event to find the answer.</span></br></div>"
+  let s3q1_introC =  "<div><u><b>Solution:</b></br></u></br><span style='color:white'>We already know that Allison is conservative. Our aim is to find out the probability that she is from the Blue party. Thus, the two critical events are: </span></br></br><u style='color:#568203'>Target event:</u> Allison being a conservative Blue</br><u style='color:red'>Conditioned event:</u> Allison being conservative</br></br><span style='color:white'>We will divide the target event by the conditioned event to find the answer.</span></br></div>"
+      let s3q1_step1 = "</br>1. It is stated that out of 60 Blue members, 33 are liberal. Then we can compute the other 27 Blue members are conservative Blues (60-33=27).</br></div>"
+      let s3q1_step2 = "2. It is stated that 75 out of 120 parliament members are liberal, then the other 45 are conservative (120-75=45).</br></br>"
+      let s3q1_step3 = "Thus, there are 27 Blue party members among 45 conservative members. The probability of Allison being a Blue member given she is conservative is 27/45 (60%)."
+    let s3q2 = "<div><u><b>Question:</b></br></u></br><div> You are seated next to Aaron, who is a member of the parliament. You are convinced that he is liberal. Given this assessment, what is your best estimate of the probability that he is one of the parliament members from the Green party?<br><br></div>"
+    let s3q2_intro =  "<div><u><b>Solution:</b></br></u></br>We already know that Aaron is liberal. Our aim is to find out the probability that he is from the Green party. Thus, the two critical events are: </br></br><u style='color:#568203'>Target event:</u> Aaron being a liberal Green</br><u style='color:red'>Conditioned event:</u> Aaron being a liberal</br></br>We will divide the target event by the conditioned event to find the answer.</br></div>"
+    let s3q2_introB =  "<div><u><b>Solution:</b></br></u></br><span style='color:white'>We already know that Aaron is liberal. Our aim is to find out the probability that he is from the Green party. Thus, the two critical events are: </br></br><u>Target event:</u> Aaron being a liberal Green</br><u>Conditioned event:</u> Aaron being a liberal</br></br><span>We will divide the target event by the conditioned event to find the answer.</span></br></div>"
+    let s3q2_introC =  "<div><u><b>Solution:</b></br></u></br><span style='color:white'>We already know that Aaron is liberal. Our aim is to find out the probability that he is from the Green party. Thus, the two critical events are: </span></br></br><u style='color:#568203'>Target event:</u> Aaron being a liberal Green</br><u style='color:red'>Conditioned event:</u> Aaron being a liberal</br></br><span style='color:white'>We will divide the target event by the conditioned event to find the answer.</span></br></div>"    
+    let s3q2_step1 = "</br>1. It is stated that there are 75 liberal members in total.</br></div>"
+      let s3q2_step2 = "2. It is also stated that there are 33 liberal Blue members. Thus, the other 42 are liberal Green members. (75-33=42)</br></br>"
+      let s3q2_step3 = "Thus, there are 42 Green party members among 75 liberal members. The probability of Aaron being the Green member given he is liberal is 42/75 (56%)."
+    let s3q3 = "</div><u><b>Question:</b></br></u></br><div>You met another parliament member, Helen, who claims to be a member from the Blue party. Given this assessment, what is your best estimate of the probability that she is liberal?<br><br></div>"
+    let s3q3_intro0 =  "<div style='color:white'><u><b>Solution:</b></br></u><u>Target event:</u> Helen being a liberal Blue</br><u>Conditioned event:</u> Helen being a Blue member</br></div>"
+    let s3q3_intro =  "<div><u><b>Solution:</b></br></u><u style='color:#568203'>Target event:</u> Helen being a liberal Blue</br><u style='color:red'>Conditioned event:</u> Helen being a Blue member</br></div>"  
+      let s3q3_step1 = "</br>1. It is stated that 33 members are liberal Blues;</br></div>"
+      let s3q3_step2 = "2. It is also stated that there are 60 Blue members in total.</br></br>"
+      let s3q3_step3 = "Thus, there are 33 liberal members among 60 Blue party members. The probability of Helen being liberal given she is from the Blue party is 33/60 (55%)."
+    let s3q4 = "</div><u><b>Question:</b></br></u></br><div>You met another parliament member, Albert, who claims to be a member from the Green party. Given this assessment, what is your best estimate of the probability that he is conservative?<br><br></div>"
+    let s3q4_intro0 =  "<div style='color:white'><u><b>Solution:</b></br></u><u>Target event:</u> Albert being a conservative Green</br><u>Conditioned event:</u> Albert being a Green member</br></div>"
+    let s3q4_intro =  "<div><u><b>Solution:</b></br></u><u style='color:#568203'>Target event:</u> Albert being a conservative Green</br><u style='color:red'>Conditioned event:</u> Albert being a Green member</br></div>"    
+    let s3q4_step1 = "</br>1. It is stated that there are 60 Blue party members among all 120 members, so the other 60 are the Green party members.(120-60=60)</br></div>"
+      let s3q4_step2 = "2. It is stated that there are 75 liberal members in total, and 33 of them are from the Blue party, then the other 42 are from the Green party.(75-33=42). We already know that there are 60 Green members in total, and since 42 are the Green liberal, the other 18 are the Green conservatives.(60-42=18)</br></br>"
+      let s3q4_step3 = "Thus, there are 18 Green party members among 60 conservative members. The probability of Albert being conservative given he is from the Green party is 18/60 (30%)."
+
+
+//pictures
+
+let Ps3q1_step1 = `${s3q1}` + `${s3q1_intro}` + "<img src='pictures/MI_S3Q1_1.png'>"
+let Ps3q1_step2 = `${s3q1}` + `${s3q1_introB}` + "<img src='pictures/MI_S3Q1_2.png'>"
+let Ps3q1_step3 = `${s3q1}` + `${s3q1_introC}` + "<img src='pictures/MI_S3Q1_3.png'>"
+
+// let Ps3q2_step1 = `${s3q2}` + "<div><u><b>Solution:</b></br></u></br>" +  "<img src='pictures/MI_S3Q2_1.png'>"
+// let Ps3q2_step2 = `${s3q2}` + "<div><u><b>Solution:</b></br></u></br>" + "<img src='pictures/MI_S3Q2_2.png'>"
+
+let Ps3q3_step1 = `${s3q3}` + `${s3q3_intro}` + "<img src='pictures/MI_S3Q3_1.png'>"
+
+// let Ps3q4_step1 = `${s3q4}` + "<div><u><b>Solution:</b></br></u></br>" + "<img src='pictures/MI_S3Q4_1.png'>"
+// let Ps3q4_step2 = `${s3q4}` + "<div><u><b>Solution:</b></br></u></br>" + "<img src='pictures/MI_S3Q4_2.png'>"
+
+
+//feedback counterpart 
+let s3_f = "<b>Part 3: Practice Session<br><br><u>Scenerio 3: Parliament Members:</u></b></br></br>Imagine that you are a lunch guest at the parliament of a small European country. There are two political parties in this 160-member parliament, namely the Blue party and the Green party. There are conservative and liberal members in both parties. Everyone is seated randomly, as is the custom in this country to encourage everyone to communicate with everyone else. You know the following:<ol> <li>Among the 160 parliament members, 80 are from the Blue party.</li><li>Among the 160 parliament members, 100 are liberal.</li> <li>In the Blue party, 56 members are liberal.</li>" 
+      let s3_f_q1_step1 = "</br>1. It is stated that out of 80 Blue members, 56 are liberal. Then we can compute the other 24 Blue members are conservative Blues.(80-56=24)</br></div>"
+      let s3_f_q1_step2 = "2. It is stated that 100 out of 160 parliament members are liberal, then the other 60 are conservative.(160-100=60)</br></br>"
+      let s3_f_q1_step3 = "Thus, there are 24 Blue party members among 60 conservative members. The probability of Allison being a Blue member given she is conservative is 24/60 (40%)."
+      let s3_f_q2_step1 = "</br>1. It is stated that there are 100 liberal members in total.</br></div>"
+      let s3_f_q2_step2 = "2. It is also stated that there are 56 liberal Blue members. Thus, the other 44 are liberal Green members. (100-56=44)</br></br>"
+      let s3_f_q2_step3 = "Thus, there are 44 Green party members among 100 liberal members. The probability of Aaron being the Green member given he is liberal is 44/100 (44%)."
+      let s3_f_q3_step1 = "</br>1. It is stated that 56 members are liberal Blues;</br></div>"
+      let s3_f_q3_step2 = "2. It is also stated that there are 80 Blue members in total.</br></br>"
+      let s3_f_q3_step3 = "Thus, there are 56 liberal members among 80 Blue party members. The probability of Helen being liberal given she is from the Blue party is 56/80 (70%)."
+      let s3_f_q4_step1 = "</br>1. It is stated that there are 80 Blue party members among all 160 members, so the other 80 are the Green party members (160-80=80).</br></div>"
+      let s3_f_q4_step2 = "2. It is stated that there are 100 liberal members in total, and 56 of them are from the Blue party, then the other 44 are from the Green party.(100-56=44). We already know that there are 80 Green members in total, and since 44 are the Green liberals, the other 36 are the Green conservatives (80-44=36).</br></br>"
+      let s3_f_q4_step3 = "Thus, there are 36 Green party members among 80 conservative members. The probability of Albert being conservative given he is from the Green party is 36/80 (45%)."
+
+  //pictures
+let Ps3q2_step1F = `${s3q2}` + `${s3q2_intro}` +"<img src='pictures/FB_S3Q1_1.png'>"
+let Ps3q2_step2F = `${s3q2}` + `${s3q2_introB}` +  "<img src='pictures/FB_S3Q1_2.png'>"
+let Ps3q2_step3F = `${s3q2}` +  `${s3q2_introC}` + "<img src='pictures/FB_S3Q2_1.png'>"
+
+
+let Ps3q4_step1F = `${s3q4}` + `${s3q4_intro}` +  "<img src='pictures/FB_S3Q4_1.png'>"
+
+  var difficulty = [
+  "Very Difficult", 
+  "Difficult", 
+  "Neither difficult nor easy", 
+  "Easy", 
+  "Very Easy"
+];
+
+var helpful = [
+"Very unhelpful", 
+  "Unhelpful", 
+  "Neither unhelpful nor helpful", 
+  "Helpful", 
+  "Very helpful"
+];
+
+
+      var welcome = {
+      type: jsPsychInstructions,
+      pages: ["Welcome to the experiment! </br></br>In this experiment, you will learn how to solve some problems in a mathematical topic called 'Conditional probabilities' and then get tested on the topic. Conditional probabilities have important applications in real life in areas including medical tests, insurance, scientific investigations, and politics, to name a few. You are provided paper and pencil on your table. We encourage you to take notes whenever you find it helpful during the experiment.</br></br> Please note that all of the problems on these slides are based on fictitious data.</br></br>This experiment has four parts:<br><b>Part 1. Pretest:</b> This part tests your prior background. <br><b>Part 2. Worked-out examples:</b> This part demonstrates step by step solutions to the Conditional probability problems.<br><b>Part 3. Practice Problems with Feedback:</b> In this part, you solve some conditional probability problems and receive feedback. <br><b>Part 4. Posttest:</b> This part tests how much you have learned the topics. </br></br>Learn how to solve the problems to the best of your ability. You will be scored based on the quality and correctness of your answers at the posttest.</br></br>",
+        "<p><b>Part 1 - Pretest</b></br></br>Please solve the pretest questions on the paper prepared on your table.</br> Show your work on the paper and type your final answer on the screen. </p>"
+      ],
+      show_clickable_nav: true,
+    };
+    timeline.push(welcome);
+
+
+
+    var pre1 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part1}`+`${preQ1}`,
+  html: '<p><input type="text" id="preq1" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(pre1);
+
+
+var pre2 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part1}`+`${preQ2}`,
+  html: '<p><input type="text" id="preq2" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(pre2);
+
+
+var pre3 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part1}`+`${preQ3}`,
+  html: '<p><input type="text" id="preq3" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(pre3);
+
+var pre4 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part1}`+`${preQ4}`,
+  html: '<p><input type="text" id="preq4" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(pre4);
+
+
+var pre5 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part1}`+`${preQ5}`,
+  html: '<p><input type="text" id="preq5" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(pre5);
+
+
+var selfRating1 = {
+      type: jsPsychSurveyLikert,
+      questions: [
+        {prompt: "How easy or difficult did you find the questions in the Pretest section?", name: 'Pretest difficulty', labels: difficulty},
+      ],
+    }
+
+timeline.push(selfRating1);
+
+
+var intro = {
+	type: jsPsychInstructions,
+	pages: ["<p><b>Part 1 - Pretest</b></br></br>Thank you for answering these initial questions. You will continue with Part 2.<br><br>",
+    "<div class='longParagraph'><b>Part 2: Worked-out Examples</b></br></br><b>Introduction to Conditional Probabilities</b></br>Suppose we pick a person randomly in Bloomington. What is the probability that the person plays violin? The answer is quite low, about 1%.</br>Suppose now we learn that this person is a student at the IU School of Music. In this situation, the probability that the person plays violin is higher, about 15%.</br>Suppose that we are further informed that the person studies in the Strings program. The probability that this person plays violin is now much higher.</br></br>Why does the probability change when we keep adding new information to the scenario? Here is why: We started with initial probability, and then we got some new information. The probability changes because the new information gives us a condition that specifies a subset of the original population.</br></br> When we learn that this person playing the piano is a student at the IU School of Music, the event of <b><i>the person playing violin</b></i> is the <u>target event</u>, and the event of <b><i>the person belonging to the School of Music</b></i> is the <u>conditioned event.</u> Later on when we learn that this person is in the Strings program, the <u>conditioned event</u> changes to the event of <i><b>the person studying in the Strings program.</i></b></br></br>To solve all the problems you will see today, it is crucial to identify <span style='color: #568203'>the target event</span> and <span style='color:red'>the conditioned event</span> of each problem.</p></div>"
+  ],
+	show_clickable_nav: true,
+  allow_backward: false,
+};
+timeline.push(intro);
+
+
+    var mainBreathalyzer = {
+      type: jsPsychInstructions,
+      pages: [
+        "<div class='longParagraph'><b>Part 2: Worked-out Examples</b><br><br><br><br>In the next section, you will be provided with example problems and their solutions.<br><br> On the table, you will find scratch paper. Take notes on the paper while you are reviewing the solutions. Do not write everything you see on the screen, though.</b></b> Just take summaries of important information that you think might be useful during the posttest phase later.<br><br></div>",
+        "<div class='longParagraph'><b>Part 2: Worked-out Examples</b></br></br>3 scenarios, 6 questions</br></br>In the following scenario, you will imagine that you work in a police department which uses Breathalyzers to test whether drivers are driving under the influence of alcohol. However, Breathalyzers do not work perfectly, and they are prone to mistakes: Sometimes drunk people's test results will show negative and sober people's results will show positive. Based on this imperfect indicator of drunkenness, you will try to find the probabilities whether a driver is actually drunk or sober.</div>"],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+    timeline.push(mainBreathalyzer);
+
+    var start_scenario = {
+      type: jsPsychCallFunction,
+      func: function () {
+        document.querySelector("#scenario-target").style.display = "block";
+        document.querySelector("#scenario-target").innerHTML = `${s1}`;
+        document.querySelector("#jspsych-target").style.width = "48vw";
+      },
+    };
+    timeline.push(start_scenario);
+
+
+    var pictureBreathalyzer = {
+      type: jsPsychInstructions,
+      pages: [`${s1q1}${s1q1_intro0}${blank}`, `${Ps1q1_step1}`, `${Ps1q1_step2}`, `${Ps1q1_step3}`,`${Ps1q1_step4}`, `${s1q2}${s1q2_intro0}${blank}`, `${Ps1q2_step1}`],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+    timeline.push(pictureBreathalyzer);
+
+    var stop_scenario = {
+      type: jsPsychCallFunction,
+      func: function () {
+        document.querySelector("#scenario-target").style.display = "none";
+        document.querySelector("#jspsych-target").style.width = "100vw";
+      },
+    };
+    timeline.push(stop_scenario);
+
+
+    var mainMam = {
+      type: jsPsychInstructions,
+      pages: [
+        "<b>Part 2: Worked-out Examples</b><br><br></br><b>Problem Scenario 2</b></p>",
+      ],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+    timeline.push(mainMam);
+
+    var mainTrans = {
+      type: jsPsychInstructions,
+      pages: [
+      "<b>Part 2: Worked-out Examples</b><br><br></br><div>We showed solutions to a conditional probability problem with icons at the previous slides.</br>Representing the scenarios with icons is a great way to understand these types of conditional probability problems, however they are timeconsuming to draw.</br>An alternative is drawing tables, which is easier. From now on, we will use tables instead of icons in the solutions. Tables can show all the important information that icons do.</br> See below how the icon and table are related to each other.</div>"+ "<p><img id = 'transit' src='pictures/transition2.png'></p>",
+      ],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+    timeline.push(mainTrans);
+
+    var start_scenario2 = {
+      type: jsPsychCallFunction,
+      func: function () {
+        document.querySelector("#scenario-target").style.display = "block";
+        document.querySelector("#scenario-target").innerHTML = `${s2}`;
+        document.querySelector("#jspsych-target").style.width = "48vw";
+      },
+    };
+    timeline.push(start_scenario2);
+
+
+    var PictureMam = {
+      type: jsPsychInstructions,
+      pages: [ `${s2q1}${s2q1_intro0}${blank}`,`${Ps2q1_step1}`,`${Ps2q1_step2}`, `${Ps2q1_step3}`,`${s2q2}${s2q1_intro0}${blank}`, `${Ps2q2_step1}` ],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+
+    timeline.push(PictureMam);
+
+    timeline.push(stop_scenario);
+
+    var mainPar = {
+      type: jsPsychInstructions,
+      pages: [
+        "<div class='longParagraph'><b>Part 2: Worked-out Examples</b><br><br></br><b>Problem Scenario 3-</b> Parliament members<br><br></p>In the following scenario, you will imagine that you are a lunch guest at the parliament of a small European country with two political parties: the Blue Party and the Green party. In both parties, there are conservative and liberal members. You will be seated next to random members of the parliament. Sometimes you will know which party the member is from and try to guess whether they are conservative or liberal. Sometimes you will know whether they are conservative or liberal and try to guess which party they are from.</div>",
+      ],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+    timeline.push(mainPar);
+
+    var start_scenario3 = {
+      type: jsPsychCallFunction,
+      func: function () {
+        document.querySelector("#scenario-target").style.display = "block";
+        document.querySelector("#scenario-target").innerHTML = `${s3}`;
+        document.querySelector("#jspsych-target").style.width = "48vw";
+      },
+    };
+    timeline.push(start_scenario3);
+
+
+
+
+var picturePar = {
+      type: jsPsychInstructions,
+      pages: [ `${s3q1}${s3q1_intro0}${blank}`,`${Ps3q1_step1}`,`${Ps3q1_step2}`, `${Ps3q1_step3}`, `${s3q3}${s3q3_intro0}${blank}`,`${Ps3q3_step1}` ],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+
+
+
+    timeline.push(picturePar);
+
+    timeline.push(stop_scenario);
+
+
+var selfRating2 = {
+      type: jsPsychSurveyLikert,
+      questions: [
+        {prompt: "How easy or difficult did you find the questions in the Worked-Out Examples section?", name: 'MI difficulty', labels: difficulty},
+        {prompt: "How helpful did you find the solutions provided in the Worked-Out Examples section to understand how to solve the problems?", name: 'MI helpfulness', labels: helpful},
+
+      ],
+    }
+
+timeline.push(selfRating2);
+
+
+
+var postTest = {
+      type: jsPsychInstructions,
+      pages: ["<b>Part 3: Posttest</b><br><br></br>Thank you for studying these worked out examples.</br> Next, you will solve the posttest questions.</br><b><u> <FONT COLOR='#8B0000'> NOW, PLEASE ASK THE EXPERIMENTER TO GIVE YOU THE POSTTEST QUESTIONS.</FONT></u></b></br>Show your work on the paper the experimenter will give and type your final answer on the screen. "
+
+      ],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+
+    timeline.push(postTest);
+
+
+    var post1 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part4}`+`${postQ1}`,
+  html: '<p><input type="text" id="preq1" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(post1);
+
+
+var post2 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part4}`+`${postQ2}`,
+  html: '<p><input type="text" id="preq2" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(post2);
+
+
+var post3 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part4}`+`${postQ3}`,
+  html: '<p><input type="text" id="preq3" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(post3);
+
+
+var post4 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part4}`+`${postQ4}`,
+  html: '<p><input type="text" id="preq4" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(post4);
+
+
+var post5 = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `${part4}`+`${postQ5}`,
+  html: '<p><input type="text" id="preq5" name="response" size="10" required /></p>',
+  autofocus: 'test-resp-box'
+};
+timeline.push(post5);
+
+
+var confidence = [
+  "Not confident at all", 
+  "Slightly confident", 
+  "Somewhat confident", 
+  "Fairly confident", 
+  "Very confident"
+];
+
+var selfRating4 = {
+      type: jsPsychSurveyLikert,
+      questions: [
+        {prompt: "How easy or difficult did you find the questions in the Posttest section?", name: 'Posttest difficulty', labels: difficulty},
+        {prompt: "How helpful did you find the solutions provided throughout this experiment to solve the posttest problems?", name: 'Experiment helpfulness', labels: helpful},
+
+      ],
+    }
+
+timeline.push(selfRating4);
+
+
+var demographics = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "In the last part we would like to collect some demographic information about you.</br></br>Please indicate your gender.", 
+      name: 'Gender', 
+      options: ['Male', 'Female', 'Transgender', 'Other', 'Rather not say'], 
+      required: true
+    }, 
+    {
+      prompt: "Plese indicate your race/ethnicity.", 
+      name: 'Race', 
+      options: ['Asian or Asian American', 'Black of African American', 'Hispanic or Latino', 'Native American', 'Native Hawaiiaan or Other Pacific Islander', 'White', 'Other'], 
+      required: false
+    },
+    {
+      prompt: "Please indicate your current year in college.", 
+      name: 'Year', 
+      options: ['Incoming freshman', 'Freshman', 'Sophomore', 'Junior', 'Senior'], 
+      required: true
+    }, 
+  ],
+};
+
+timeline.push(demographics);
+
+
+var demographics2 = {
+  type: jsPsychSurveyText,
+  questions: [
+    {prompt: 'Please indicate your age in years.', name: 'age'},
+    {prompt: 'Please indicate the name of your major or your intended major. ', name: 'major'},
+    {prompt: 'Please indicate your current GPA.', name: 'GPA'}
+  ]
+}
+
+timeline.push(demographics2);
+
+
+var end = {
+      type: jsPsychInstructions,
+      pages: [
+        "The experiment ended. Thank you for your participation. Press NEXT before you leave to save your data, so you can receive your credits. </br>Please provide the papers to the experimenter."
+      ],
+      show_clickable_nav: true,
+      allow_backward: false,
+    };
+    timeline.push(end);
+
+
+
+   
+
+    function saveData(name, data){
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({filename: name, filedata: data}));
+}
+
+let randomNumber = Math.random()
+
+<script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
+
+              const subject_id = jsPsych.randomization.randomID(10);
+              const filename = `${subject_id}.csv`;
+            
+              const save_data = {
+                type: jsPsychPipe,
+                action: "save",
+                experiment_id: "zgigVWh29y8j",
+                filename: filename,
+                data_string: ()=>jsPsych.data.get().csv()
+              };
+              
+console.log(randomNumber)
+
+
+  jsPsych.data.addProperties({condition: "Instruction"});
+    jsPsych.run(timeline);
+
+
+
+
+  </script>
+
+</html>

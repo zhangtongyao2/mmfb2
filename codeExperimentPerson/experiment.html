@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Experiment Launcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 60px;
+      margin-bottom: 40px;
+    }
+
+    p {
+      font-size: 36px;
+      margin-bottom: 60px;
+    }
+
+    button {
+      padding: 30px 60px;
+      font-size: 36px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      background-color: #007BFF;
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Welcome to the Experiment</h1>
+  <p>Click the button below to begin</p>
+  <button id="startBtn"> Start the Experiment</button>
+
+  <script>
+    document.getElementById('startBtn').addEventListener('click', function() {
+      const rand = Math.random();
+      if (rand < 2/3) {
+        window.location.href = 'I_IF_Person.html';
+      } else {
+        window.location.href = 'F_Person.html';
+      }
+    });
+  </script>
+
+</body>
+</html>
+

@@ -116,6 +116,8 @@ body {
   </body>
   <script>
 
+     const subject_id = jsPsych.randomization.randomID(10); //subject id for naming data
+     const filename = `${subject_id}.csv`;
 
 var jsPsych = initJsPsych({
   display_element: "jspsych-target"
@@ -151,10 +153,6 @@ timelineFeedb.push(trial);
          //var subjectID = getQueryVariable("id");
          if (subjectID === '' || subjectID == null) {subjectID=Math.floor(Math.random()*10000).toString()};
          jsPsych.data.addProperties({subject_id: subjectID});
-
-
-     const subject_id = jsPsych.randomization.randomID(10); //subject id for naming data
-     const filename = `${subject_id}.csv`;
             
 
 
@@ -962,7 +960,14 @@ var demographics2 = {
 
 timelineFeedb.push(demographics2);
 
-
+              const save_data = {
+                type: jsPsychPipe,
+                action: "save",
+                experiment_id: "zgigVWh29y8j",
+                filename: filename,
+                data_string: ()=>jsPsych.data.get().csv()
+              };
+	  
 var end = {
       type: jsPsychInstructions,
       pages: [
@@ -971,16 +976,8 @@ var end = {
       show_clickable_nav: true,
       allow_backward: false,
     };
+	timelineFeedb.push(end);
     timelineFeedb.push(save_data);
-
-
-              const save_data = {
-                type: jsPsychPipe,
-                action: "save",
-                experiment_id: "zgigVWh29y8j",
-                filename: filename,
-                data_string: ()=>jsPsych.data.get().csv()
-              };
 
    
 

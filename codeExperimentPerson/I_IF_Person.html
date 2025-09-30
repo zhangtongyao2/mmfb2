@@ -1126,18 +1126,19 @@ var end = {
 //  xhr.send(JSON.stringify({filename: name, filedata: data}));
 //}
 
-<script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
 
-              const subject_id = jsPsych.randomization.randomID(10);
-              const filename = `${subject_id}.csv`;
-            
-              const save_data = {
-                type: jsPsychPipe,
-                action: "save",
-                experiment_id: "zgigVWh29y8j",
-                filename: filename,
-                data_string: ()=>jsPsych.data.get().csv()
-              };
+            fetch("https://pipe.jspsych.org/api/data/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "*/*",
+              },
+              body: JSON.stringify({
+                experimentID: "zgigVWh29y8j",
+                filename: "UNIQUE_FILENAME.csv",
+                data: dataAsString,
+              }),
+            });
 	  
 let randomNumber = Math.random()
 

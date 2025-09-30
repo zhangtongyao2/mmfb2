@@ -14,6 +14,7 @@
     <script src="jspsych/dist/plugin-external-html.js"></script>
     <script src="jspsych/dist/plugin-survey-likert.js"></script>
     <script src="jspsych/dist/plugin-survey-text.js"></script>
+	<script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
 
 
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
@@ -152,6 +153,10 @@ timelineFeedb.push(trial);
          if (subjectID === '' || subjectID == null) {subjectID=Math.floor(Math.random()*10000).toString()};
          jsPsych.data.addProperties({subject_id: subjectID});
 
+
+     const subject_id = jsPsych.randomization.randomID(10); //subject id for naming data
+     const filename = `${subject_id}.csv`;
+            
 
 
 let negFeedback = "<b>Your final answer was <FONT COLOR='#ff0000'>INCORRECT! &#10060;</FONT></b>"
@@ -970,6 +975,13 @@ var end = {
     timelineFeedb.push(end);
 
 
+              const save_data = {
+                type: jsPsychPipe,
+                action: "save",
+                experiment_id: "zgigVWh29y8j",
+                filename: filename,
+                data_string: ()=>jsPsych.data.get().csv()
+              };
 
    
 
@@ -979,20 +991,6 @@ var end = {
 //  xhr.setRequestHeader('Content-Type', 'application/json');
 //  xhr.send(JSON.stringify({filename: name, filedata: data}));
 //}
-
-
-            fetch("https://pipe.jspsych.org/api/data/", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "*/*",
-              },
-              body: JSON.stringify({
-                experimentID: "zgigVWh29y8j",
-                filename: "UNIQUE_FILENAME.csv",
-                data: dataAsString,
-              }),
-            });
 
 
   jsPsych.data.addProperties({condition: "F"});

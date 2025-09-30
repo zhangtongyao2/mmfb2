@@ -116,13 +116,13 @@ body {
   </body>
   <script>
 
-     const subject_id = jsPsych.randomization.randomID(10); //subject id for naming data
-     const filename = `${subject_id}.csv`;
-
 var jsPsych = initJsPsych({
   display_element: "jspsych-target"
 });
-	  
+
+const subject_id = jsPsych.randomization.randomID(10); //subject id for naming data
+const filename = `${subject_id}.csv`;
+
 timelineFeedb = [];
 
                 // sample function that might be used to check if a participant has given

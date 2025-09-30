@@ -118,10 +118,9 @@ body {
 
 
 var jsPsych = initJsPsych({
-  display_element: "jspsych-target",
-  on_finish: function(){ saveData(subjectID, jsPsych.data.get().csv()); }
-
+  display_element: "jspsych-target"
 });
+	  
 timelineFeedb = [];
 
                 // sample function that might be used to check if a participant has given
@@ -972,7 +971,7 @@ var end = {
       show_clickable_nav: true,
       allow_backward: false,
     };
-    timelineFeedb.push(end);
+    timelineFeedb.push(save_data);
 
 
               const save_data = {

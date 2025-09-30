@@ -14,6 +14,7 @@
     <script src="jspsych/dist/plugin-external-html.js"></script>
     <script src="jspsych/dist/plugin-survey-likert.js"></script>
     <script src="jspsych/dist/plugin-survey-text.js"></script>
+	<script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
 
 
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
@@ -117,12 +118,12 @@ body {
 
 
 var jsPsych = initJsPsych({
-  display_element: "jspsych-target",
-  on_finish: function(){ saveData(subjectID, jsPsych.data.get().csv()); }
+  display_element: "jspsych-target"
 
 });
 
-
+const subject_id = jsPsych.randomization.randomID(10); //subject id for naming data
+const filename = `${subject_id}.csv`;
 
     var timelineInst = [];
     var timelineInstFeedb = [];
@@ -1105,7 +1106,14 @@ var demographics2 = {
 timelineInst.push(demographics2);
 timelineInstFeedb.push(demographics2);
 
-
+              const save_data = {
+                type: jsPsychPipe,
+                action: "save",
+                experiment_id: "zgigVWh29y8j",
+                filename: filename,
+                data_string: ()=>jsPsych.data.get().csv()
+              };
+	  
 var end = {
       type: jsPsychInstructions,
       pages: [
@@ -1116,6 +1124,8 @@ var end = {
     };
     timelineInst.push(end);
     timelineInstFeedb.push(end);
+	timelineInst.push(save_data);
+    timelineInstFeedb.push(save_data);
 
 
 
@@ -1126,19 +1136,6 @@ var end = {
 //  xhr.send(JSON.stringify({filename: name, filedata: data}));
 //}
 
-
-            fetch("https://pipe.jspsych.org/api/data/", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "*/*",
-              },
-              body: JSON.stringify({
-                experimentID: "zgigVWh29y8j",
-                filename: "UNIQUE_FILENAME.csv",
-                data: dataAsString,
-              }),
-            });
 	  
 let randomNumber = Math.random()
 

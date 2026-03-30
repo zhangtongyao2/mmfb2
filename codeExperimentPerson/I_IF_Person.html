@@ -14,6 +14,7 @@
     <script src="jspsych/dist/plugin-external-html.js"></script>
     <script src="jspsych/dist/plugin-survey-likert.js"></script>
     <script src="jspsych/dist/plugin-survey-text.js"></script>
+	<script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
 
 
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
@@ -117,12 +118,12 @@ body {
 
 
 var jsPsych = initJsPsych({
-  display_element: "jspsych-target",
-  on_finish: function(){ saveData(subjectID, jsPsych.data.get().csv()); }
+  display_element: "jspsych-target"
 
 });
 
-
+const subject_id = jsPsych.randomization.randomID(10); //subject id for naming data
+const filename = `${subject_id}.csv`;
 
     var timelineInst = [];
     var timelineInstFeedb = [];
@@ -658,7 +659,7 @@ var Fscenario1fq1_if = {
     denomData = Number(denomData);
     console.log(nomData, denomData);
     answer = nomData/denomData; 
-    if (answer == 8/20) {
+    if (answer == 14/20) {
       feedback_text = `${posFeedback}${F_S1Q1_answer}`;
       // feedback_text = s1q1.concat(`${posFeedback}`);
     }
@@ -697,7 +698,7 @@ var Fscenario1fq2_if = {
     denomData = Number(denomData);
     console.log(nomData, denomData);
     answer = nomData/denomData; 
-    if (answer == 78/80) {
+    if (answer == 76/80) {
       feedback_text = `${posFeedback}${F_S1Q2_answer}`;
 
       // feedback_text = s1q2.concat(`${posFeedback}`);
@@ -763,7 +764,7 @@ var Fscenario2fq1_if = {
     denomData = Number(denomData);
     console.log(nomData, denomData);
     answer = nomData/denomData; 
-    if (answer == 36/50) {
+    if (answer == 45/60) {
       feedback_text = `${posFeedback}${F_S2Q1_answer}`;
 
       // feedback_text = s2q1.concat(`${posFeedback}`);
@@ -804,7 +805,7 @@ var Fscenario2fq2_if = {
     denomData = Number(denomData);
     console.log(nomData, denomData);
     answer = nomData/denomData; 
-    if (answer == 46/50) {
+    if (answer == 66/75) {
       feedback_text = `${posFeedback}${F_S2Q2_answer}`;
 
       // feedback_text = s2q2.concat(`${posFeedback}`);
@@ -858,7 +859,7 @@ var Fscenario3fq2_if = {
     denomData = Number(denomData);
     console.log(nomData, denomData);
     answer = nomData/denomData; 
-    if (answer == 42/75) {
+    if (answer == 44/100) {
       feedback_text = `${posFeedback}${F_S3Q1_answer}`;
 
       // feedback_text = s3q2.concat(`${posFeedback}`);
@@ -901,7 +902,7 @@ var Fscenario3fq4_if = {
     denomData = Number(denomData);
     console.log(nomData, denomData);
     answer = nomData/denomData; 
-    if (answer == 18/60) {
+    if (answer == 36/80) {
       feedback_text = `${posFeedback}${F_S3Q2_answer}`;
       // feedback_text = s3q4.concat(`${posFeedback}`);
     }
@@ -1076,7 +1077,7 @@ var demographics = {
     {
       prompt: "Plese indicate your race/ethnicity.", 
       name: 'Race', 
-      options: ['Asian or Asian American', 'Black of African American', 'Hispanic or Latino', 'Native American', 'Native Hawaiiaan or Other Pacific Islander', 'White', 'Other'], 
+      options: ['Asian or Asian American', 'Black or African American', 'Hispanic or Latino', 'Native American', 'Native Hawaiiaan or Other Pacific Islander', 'White', 'Other'], 
       required: false
     },
     {
@@ -1105,7 +1106,14 @@ var demographics2 = {
 timelineInst.push(demographics2);
 timelineInstFeedb.push(demographics2);
 
-
+              const save_data = {
+                type: jsPsychPipe,
+                action: "save",
+                experiment_id: "zgigVWh29y8j",
+                filename: filename,
+                data_string: ()=>jsPsych.data.get().csv()
+              };
+	  
 var end = {
       type: jsPsychInstructions,
       pages: [
@@ -1116,16 +1124,19 @@ var end = {
     };
     timelineInst.push(end);
     timelineInstFeedb.push(end);
+	timelineInst.push(save_data);
+    timelineInstFeedb.push(save_data);
 
 
 
-    function saveData(name, data){
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(JSON.stringify({filename: name, filedata: data}));
-}
+//    function saveData(name, data){
+//  var xhr = new XMLHttpRequest();
+//  xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+//  xhr.setRequestHeader('Content-Type', 'application/json');
+//  xhr.send(JSON.stringify({filename: name, filedata: data}));
+//}
 
+	  
 let randomNumber = Math.random()
 
 if (Math.random()<1/2){

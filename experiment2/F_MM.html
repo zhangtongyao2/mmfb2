@@ -14,8 +14,6 @@
     <script src="jspsych/dist/plugin-external-html.js"></script>
     <script src="jspsych/dist/plugin-survey-likert.js"></script>
     <script src="jspsych/dist/plugin-survey-text.js"></script>
-    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
-
 
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
     <style>
@@ -896,13 +894,17 @@ var demographics2 = {
 
 timelineFeedb.push(demographics2);
 
-
               const save_data = {
-                type: jsPsychPipe,
-                action: "save",
-                experiment_id: "lzjniKe2CVwD",
-                filename: filename,
-                data_string: ()=>jsPsych.data.get().csv()
+                type: jsPsychCallFunction,
+                func: function() {
+                  var data = jsPsych.data.get().csv();
+                  var link = document.createElement('a');
+                  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(data);
+                  link.download = filename;
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                }
               };
 
 var end = {
@@ -915,19 +917,6 @@ var end = {
     };
     timelineFeedb.push(end);
 timelineFeedb.push(save_data);
-
-
-   
-
-//     function saveData(name, data){
-//   var xhr = new XMLHttpRequest();
-//   xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
-//   xhr.setRequestHeader('Content-Type', 'application/json');
-//   xhr.send(JSON.stringify({filename: name, filedata: data}));
-// }
-
-
-
 
   jsPsych.data.addProperties({condition: "F"});
   jsPsych.run(timelineFeedb);

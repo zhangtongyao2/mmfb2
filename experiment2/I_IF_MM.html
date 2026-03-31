@@ -14,6 +14,7 @@
     <script src="jspsych/dist/plugin-external-html.js"></script>
     <script src="jspsych/dist/plugin-survey-likert.js"></script>
     <script src="jspsych/dist/plugin-survey-text.js"></script>
+    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
 
 
     <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
@@ -117,12 +118,11 @@ body {
 
 
 var jsPsych = initJsPsych({
-  display_element: "jspsych-target",
-  on_finish: function(){ saveData(subjectID, jsPsych.data.get().csv()); }
-
+  display_element: "jspsych-target"
 });
 
-
+              const subject_id = jsPsych.randomization.randomID(10);
+              const filename = `${subject_id}.csv`;
 
     var timelineInst = [];
     var timelineInstFeedb = [];
@@ -1038,6 +1038,13 @@ var demographics2 = {
 timelineInst.push(demographics2);
 timelineInstFeedb.push(demographics2);
 
+              const save_data = {
+                type: jsPsychPipe,
+                action: "save",
+                experiment_id: "lzjniKe2CVwD",
+                filename: filename,
+                data_string: ()=>jsPsych.data.get().csv()
+              };
 
 var end = {
       type: jsPsychInstructions,
@@ -1049,15 +1056,15 @@ var end = {
     };
     timelineInst.push(end);
     timelineInstFeedb.push(end);
+timelineInst.push(save_data);
+timelineInstFeedb.push(save_data);
 
-
-
-    function saveData(name, data){
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(JSON.stringify({filename: name, filedata: data}));
-}
+//     function saveData(name, data){
+//   var xhr = new XMLHttpRequest();
+//   xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+//   xhr.setRequestHeader('Content-Type', 'application/json');
+//   xhr.send(JSON.stringify({filename: name, filedata: data}));
+// }
 
 let randomNumber = Math.random()
 

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Upload Answer Sheet</title>
+    <style>
+      #preview {
+        max-width: 300px;
+        margin-top: 10px;
+        display: none;
+      }
+      #upload-container {
+        font-family: Arial, sans-serif;
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        box-shadow: 2px 2px 12px #eee;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Upload UI -->
+    <div id="upload-container">
+      <h3>Upload Your Answer Sheet</h3>
+
+      <label for="email">Enter your IU email address:</label><br />
+      <input type="email" id="email" placeholder="e.g., student@iu.edu" required /><br /><br />
+
+      <label for="upload">Upload a photo of your written answers:</label><br />
+      <input type="file" id="upload" accept="image/*" capture="environment" /><br /><br />
+
+      <img id="preview" />
+
+      <button id="submitFile">Submit</button>
+      <p id="upload-status"></p>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      // Preview selected image
+      document.getElementById("upload").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const preview = document.getElementById("preview");
+            preview.src = e.target.result;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Upload logic
+      document.getElementById("submitFile").addEventListener("click", function () {
+        const fileInput = document.getElementById("upload").files[0];
+        const email = document.getElementById("email").value.trim();
+        const statusText = document.getElementById("upload-status");
+
+        if (!email) {
+          statusText.innerHTML = "<b style='color:red;'>⚠️ Please enter your email.</b>";
+          return;
+        }
+
+        if (!fileInput) {
+          statusText.innerHTML = "<b style='color:red;'>⚠️ Please select an image to upload.</b>";
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput);
+        formData.append("email", email);
+
+        fetch("upload.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.text())
+          .then((data) => {
+            statusText.innerHTML =
+              "<b style='color:green;'>✅ File uploaded successfully!</b><br>" + data;
+            document.getElementById("upload-container").style.display = "none";
+            document.body.innerHTML += "<p style='text-align:center; font-size:18px;'>Thank you for completing the experiment!</p>";
+          })
+          .catch((error) => {
+            statusText.innerHTML = "<b style='color:red;'>❌ Upload failed: " + error + "</b>";
+          });
+      });
+    </script>
+  </body>
+</html>
+
+

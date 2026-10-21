@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../dist/jspsych.js"></script>
+    <script src="../dist/plugin-survey-fraction.js"></script>
+    <link rel="stylesheet" href="../dist/jspsych.css" />
+  </head>
+  <body></body>
+  <script>
+    var jsPsych = initJsPsych({
+      on_finish: function () {
+        jsPsych.data.displayData();
+      },
+    });
+
+    var survey_page1 = {
+      type: jsPsychSurveyFraction,
+      questions: [
+        {
+          prompt: "What is the likelihood",
+          columns: 1,
+          required: true,
+          name: "nominator",
+        },
+        { prompt: "<hr>", placeholder: "", columns: 1, name: "denominator" },
+      ],
+      randomize_question_order: false,
+    };
+
+    // var survey_page2 = {
+    //   type: jsPsychSurveyText,
+    //   questions: [
+    //     {prompt: 'Tell me about your day', placeholder: 'How did it start?', rows:10, columns: 50}
+    //   ]
+    // };
+
+    jsPsych.run([survey_page1]);
+  </script>
+</html>

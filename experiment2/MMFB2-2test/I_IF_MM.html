@@ -114,21 +114,28 @@ body {
 
 body.experiment-end-active #jspsych-instructions-next {
   position: fixed;
-  right: 6px;
-  bottom: 6px;
-  width: 18px;
+  right: 10px;
+  bottom: 10px;
+  width: 30px;
   min-width: 0;
-  height: 18px;
+  height: 30px;
   margin: 0;
   padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid #dedede;
+  border-radius: 3px;
+  background: #f2f2f2;
   box-shadow: none;
   color: transparent;
   font-size: 0;
-  opacity: 0.02;
-  cursor: default;
+  opacity: 0.4;
+  cursor: pointer;
+}
+
+body.experiment-end-active #jspsych-instructions-next:hover,
+body.experiment-end-active #jspsych-instructions-next:focus {
+  border-color: #b8b8b8;
+  background: #d8d8d8;
+  opacity: 0.85;
 }
 
     </style>

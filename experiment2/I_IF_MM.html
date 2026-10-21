@@ -98,6 +98,46 @@ body {
     margin-inline-end: 5px;
 }
 
+.experiment-end-screen {
+  width: 95vw;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.experiment-end-message {
+  width: 95vw;
+  margin: 5vh auto;
+  font-size: clamp(48px, 6vw, 96px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+body.experiment-end-active #jspsych-instructions-next {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 30px;
+  min-width: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #dedede;
+  border-radius: 3px;
+  background: #f2f2f2;
+  box-shadow: none;
+  color: transparent;
+  font-size: 0;
+  opacity: 0.4;
+  cursor: pointer;
+}
+
+body.experiment-end-active #jspsych-instructions-next:hover,
+body.experiment-end-active #jspsych-instructions-next:focus {
+  border-color: #b8b8b8;
+  background: #d8d8d8;
+  opacity: 0.85;
+}
+
     </style>
 
   </head>
@@ -118,9 +158,8 @@ body {
 var jsPsych = initJsPsych({
   display_element: "jspsych-target"
 });
-
               const subject_id = jsPsych.randomization.randomID(10);
-              const filename = `${subject_id}.csv`;
+              const fallbackFilename = `${subject_id}.csv`;
 
     var timelineInst = [];
     var timelineInstFeedb = [];
@@ -151,12 +190,33 @@ timelineInst.push(trial);
 timelineInstFeedb.push(trial);
 
 
+    const emailPrompt = 'What is your IU email? (You need to type in your email so we can grant you credits for your participation. Otherwise, we will not know who you are.)';
+    var subjectID = '';
 
-    var subjectID = prompt('What is your IU email? (You need to type in your email so we can grant you credits for your participation. Otherwise, we will not know who you are.)');
-         //jsPsych.data.addProperties({subject_id: subjectID});
-         //var subjectID = getQueryVariable("id");
-         if (subjectID === '' || subjectID == null) {subjectID=Math.floor(Math.random()*10000).toString()};
-         jsPsych.data.addProperties({subject_id: subjectID});
+    while (true) {
+      const enteredEmail = prompt(emailPrompt, subjectID);
+      const normalizedEmail = enteredEmail === null ? '' : enteredEmail.replace(/\s+/g, '').toLowerCase();
+
+      if (/^[a-z0-9._-]+@iu\.edu$/i.test(normalizedEmail)) {
+        subjectID = normalizedEmail;
+        break;
+      }
+
+      alert('Please enter a valid IU email address that ends with @iu.edu.');
+    }
+
+    let filename = fallbackFilename;
+    try {
+      const iuUsername = subjectID.slice(0, subjectID.lastIndexOf('@'));
+      if (!iuUsername) {
+        throw new Error('The IU username could not be determined.');
+      }
+      filename = `${iuUsername}.csv`;
+    } catch (error) {
+      console.error('Could not create the username-based filename. Using a random filename instead.', error);
+    }
+
+    jsPsych.data.addProperties({subject_id: subjectID});
 
 
 
@@ -1040,22 +1100,44 @@ timelineInstFeedb.push(demographics2);
                 type: jsPsychCallFunction,
                 func: function() {
                   var data = jsPsych.data.get().csv();
-                  var link = document.createElement('a');
-                  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(data);
-                  link.download = filename;
-                  document.body.appendChild(link);
-                  link.click();
-                  link.remove();
+                  var downloadCsv = function(downloadFilename) {
+                    var link = document.createElement('a');
+                    link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(data);
+                    link.download = downloadFilename;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                  };
+
+                  try {
+                    downloadCsv(filename);
+                  } catch (error) {
+                    console.error('Could not save with the username-based filename. Trying a random filename instead.', error);
+                    downloadCsv(fallbackFilename);
+                  }
                 }
               };
 
 var end = {
       type: jsPsychInstructions,
       pages: [
-        "The experiment ended. Thank you for your participation. </br><b><FONT COLOR='#8B0000'>You can leave the computer to the experimenter now. </FONT> </b> </br>Please provide the papers to the experimenter."
+        "<div class='experiment-end-screen'><p>The experiment ended. Thank you for your participation.</p><p class='experiment-end-message'>Please DO NOT close the tab, and leave the computer at this screen.</p><p>Please provide the papers to the experimenter.</p></div>"
       ],
       show_clickable_nav: true,
       allow_backward: false,
+      allow_keys: false,
+      button_label_next: "",
+      on_load: function() {
+        document.body.classList.add('experiment-end-active');
+        var nextButton = document.querySelector('#jspsych-instructions-next');
+        if (nextButton) {
+          nextButton.textContent = '';
+          nextButton.setAttribute('aria-label', 'Continue');
+        }
+      },
+      on_finish: function() {
+        document.body.classList.remove('experiment-end-active');
+      },
     };
     timelineInst.push(end);
     timelineInstFeedb.push(end);
